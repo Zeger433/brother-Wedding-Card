@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Zain &amp; Eliza — You Are Invited</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blush:#F2F9F8;
+    --blush-deep:#DFF0EE;
+    --maroon:#0E5C56;
+    --maroon-deep:#073A36;
+    --rose:#4FA69C;
+    --charcoal:#333333;
+    --gold:#C9A05C;
+    --gold-soft:#D9C08A;
+    --script: 'Great Vibes', cursive;
+    --serif: 'Playfair Display', serif;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    font-family: var(--serif);
+    background: #D8EBE8;
+    color: var(--charcoal);
+    display:flex;
+    justify-content:center;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+
+  .app{
+    width:100%;
+    max-width:480px;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 12% 8%, rgba(14,92,86,0.05), transparent 40%),
+      radial-gradient(circle at 88% 92%, rgba(14,92,86,0.05), transparent 40%),
+      repeating-linear-gradient(45deg, rgba(14,92,86,0.025) 0px, rgba(14,92,86,0.025) 1px, transparent 1px, transparent 22px),
+      repeating-linear-gradient(-45deg, rgba(14,92,86,0.02) 0px, rgba(14,92,86,0.02) 1px, transparent 1px, transparent 22px),
+      var(--blush);
+    position:relative;
+    box-shadow: 0 0 60px rgba(0,0,0,0.25);
+    overflow-x:hidden;
+  }
+
+  /* ---------- Music toggle ---------- */
+  .music-toggle{
+    position:fixed;
+    top:16px; right:16px;
+    max-width:480px;
+    width:44px; height:44px;
+    border-radius:12px;
+    background:rgba(253,245,246,0.65);
+    backdrop-filter:blur(6px);
+    border:1px solid rgba(14,92,86,0.25);
+    display:flex; align-items:center; justify-content:center;
+    z-index:500;
+    cursor:pointer;
+    color:var(--maroon);
+    box-shadow:0 4px 14px rgba(14,92,86,0.15);
+    transition:transform .2s ease;
+  }
+  .music-toggle:active{transform:scale(0.92);}
+  .music-toggle svg{width:20px;height:20px;}
+  .music-toggle .bar{
+    display:none;
+  }
+  .music-toggle.playing .bar{display:block;}
+
+  /* ---------- Section 1: Envelope ---------- */
+  .envelope-screen{
+    position:fixed;
+    inset:0;
+    max-width:480px;
+    margin:0 auto;
+    background: var(--blush);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    z-index:400;
+    transition: opacity 1s ease, visibility 1s ease;
+  }
+  .envelope-screen.hidden{
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+  .invited-label{
+    font-family:var(--serif);
+    font-weight:600;
+    letter-spacing:6px;
+    font-size:13px;
+    color:var(--maroon);
+    margin-top:34px;
+  }
+  .envelope-wrap{
+    width:260px;
+    height:180px;
+    position:relative;
+    perspective:1200px;
+  }
+  .envelope-body{
+    position:absolute;
+    inset:0;
+    background: linear-gradient(160deg,#BFE3DC,#9BCFC5 60%, #7CB8AC);
+    border-radius:6px;
+    box-shadow: 0 18px 40px rgba(14,92,86,0.25);
+  }
+  .envelope-body::before,
+  .envelope-body::after{
+    content:"";
+    position:absolute;
+    width:0; height:0;
+    border-style:solid;
+  }
+  .envelope-body::before{
+    left:0; bottom:0;
+    border-width:0 0 90px 130px;
+    border-color:transparent transparent rgba(14,92,86,0.10) transparent;
+  }
+  .envelope-body::after{
+    right:0; bottom:0;
+    border-width:90px 130px 0 0;
+    border-color:transparent transparent transparent rgba(14,92,86,0.06);
+  }
+  .envelope-flap{
+    position:absolute;
+    top:0; left:0; right:0;
+    height:100px;
+    background: linear-gradient(200deg,#CDE9E3,#A8D6CB);
+    clip-path: polygon(0 0, 100% 0, 50% 78%);
+    transform-origin: top center;
+    transition: transform 1s cubic-bezier(.6,-0.1,.3,1.4);
+    z-index:3;
+    border-radius:6px 6px 0 0;
+  }
+  .envelope-flap.open{
+    transform: rotateX(178deg);
+  }
+  .seal{
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    width:72px; height:72px;
+    border-radius:50%;
+    background: radial-gradient(circle at 32% 28%, #E7D8A6, var(--gold) 45%, #8A6E30 100%);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.35), inset 0 -4px 6px rgba(0,0,0,0.25), inset 0 3px 4px rgba(255,255,255,0.5);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    z-index:5;
+    font-family:var(--script);
+    color:#3E4A22;
+    font-size:13px;
+    text-align:center;
+    line-height:1.05;
+    transition: transform .5s ease, opacity .5s ease;
+    animation: pulseSeal 2.4s ease-in-out infinite;
+  }
+  .seal span{padding:0 4px;}
+  @keyframes pulseSeal{
+    0%,100%{ box-shadow: 0 6px 16px rgba(0,0,0,0.35), inset 0 -4px 6px rgba(0,0,0,0.25), inset 0 3px 4px rgba(255,255,255,0.5), 0 0 0 0 rgba(201,160,92,0.5);}
+    50%{ box-shadow: 0 6px 16px rgba(0,0,0,0.35), inset 0 -4px 6px rgba(0,0,0,0.25), inset 0 3px 4px rgba(255,255,255,0.5), 0 0 0 10px rgba(201,160,92,0);}
+  }
+  .seal.tapped{ transform:translate(-50%,-50%) scale(0); opacity:0; }
+  .flare{
+    position:absolute;
+    inset:0;
+    border-radius:6px;
+    background: radial-gradient(circle at 50% 45%, rgba(255,250,225,0.95), rgba(255,235,180,0.4) 40%, transparent 70%);
+    opacity:0;
+    pointer-events:none;
+    z-index:6;
+  }
+  .flare.show{
+    animation: flareBurst 1s ease forwards;
+  }
+  @keyframes flareBurst{
+    0%{opacity:0; transform:scale(0.4);}
+    40%{opacity:1; transform:scale(1.6);}
+    100%{opacity:0; transform:scale(2.6);}
+  }
+  .tap-hint{
+    margin-top:26px;
+    font-family:var(--serif);
+    font-style:italic;
+    font-size:12px;
+    color:var(--rose);
+    letter-spacing:1px;
+  }
+
+  /* ---------- Falling petals ---------- */
+  .petal-field{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    pointer-events:none;
+    z-index:1;
+  }
+  .petal{
+    position:absolute;
+    top:-24px;
+    will-change:transform, opacity;
+    animation-name: petal-fall, petal-sway;
+    animation-timing-function: linear, ease-in-out;
+    animation-iteration-count: 1, infinite;
+    opacity:0.9;
+  }
+  .petal svg{
+    display:block;
+    filter:drop-shadow(0 2px 3px rgba(14,92,86,0.15));
+  }
+  @keyframes petal-fall{
+    from{ transform: translateY(-5vh) rotate(0deg); }
+    to{ transform: translateY(115vh) rotate(360deg); }
+  }
+  @keyframes petal-sway{
+    0%, 100%{ margin-left:0px; }
+    50%{ margin-left:28px; }
+  }
+
+  /* ---------- Section 2: Hero ---------- */
+  .hero{
+    min-height:100vh;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:60px 30px 50px;
+    position:relative;
+    color:#fff;
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(255,225,190,0.18), transparent 55%),
+      linear-gradient(180deg, rgba(30,10,18,0.55), rgba(30,10,18,0.75)),
+      linear-gradient(160deg,#072320 0%, #0b3a34 35%, #146b60 55%, #082c28 100%);
+    overflow:hidden;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      radial-gradient(2px 2px at 20% 20%, rgba(255,220,150,0.9), transparent),
+      radial-gradient(2px 2px at 70% 15%, rgba(255,220,150,0.7), transparent),
+      radial-gradient(1.5px 1.5px at 40% 60%, rgba(255,220,150,0.8), transparent),
+      radial-gradient(2px 2px at 85% 70%, rgba(255,220,150,0.6), transparent),
+      radial-gradient(1.5px 1.5px at 15% 80%, rgba(255,220,150,0.7), transparent),
+      radial-gradient(1.5px 1.5px at 55% 40%, rgba(255,220,150,0.5), transparent);
+    animation: twinkle 5s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle{
+    0%{opacity:0.5;}
+    100%{opacity:1;}
+  }
+  .hero-arch{
+    position:absolute;
+    bottom:0; left:50%;
+    transform:translateX(-50%);
+    width:340px; height:340px;
+    border:3px solid rgba(233,206,122,0.35);
+    border-radius:50% 50% 0 0 / 60% 60% 0 0;
+    border-bottom:none;
+  }
+  .hero-content{position:relative; z-index:2;}
+  .heart-icon{
+    width:26px; height:26px;
+    margin:0 auto 18px;
+    opacity:0.9;
+  }
+  .hero-welcome{
+    font-family:var(--script);
+    font-size:24px;
+    line-height:1.35;
+    max-width:280px;
+    margin:0 auto 22px;
+    font-weight:400;
+  }
+  .name-block{margin:6px 0;}
+  .name-block .name{
+    font-family:var(--script);
+    font-size:56px;
+    line-height:1;
+    color:#fff;
+    text-shadow:0 4px 18px rgba(0,0,0,0.35);
+  }
+  .name-block .subtext{
+    font-family:var(--serif);
+    font-size:13px;
+    letter-spacing:0.5px;
+    margin-top:6px;
+  }
+  .name-block .quals{
+    font-family:var(--serif);
+    font-style:italic;
+    font-weight:300;
+    font-size:11px;
+    opacity:0.85;
+    margin-top:3px;
+    letter-spacing:0.3px;
+  }
+  .ampersand{
+    font-family:var(--script);
+    font-size:44px;
+    margin:8px 0;
+    color:var(--gold-soft);
+  }
+  .scroll-indicator{
+    position:absolute;
+    bottom:22px; left:50%;
+    transform:translateX(-50%);
+    font-family:var(--serif);
+    font-size:10px;
+    letter-spacing:3px;
+    opacity:0.8;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+  }
+  .scroll-indicator .chevron{
+    width:9px; height:9px;
+    border-right:1.5px solid #fff;
+    border-bottom:1.5px solid #fff;
+    transform:rotate(45deg);
+    animation: bob 1.6s ease-in-out infinite;
+  }
+  @keyframes bob{
+    0%,100%{transform:rotate(45deg) translate(0,0);}
+    50%{transform:rotate(45deg) translate(3px,3px);}
+  }
+
+  /* ---------- shared section styles ---------- */
+  section{
+    padding:56px 28px;
+    position:relative;
+  }
+  .eyebrow-icon{
+    width:20px; height:20px;
+    color:var(--maroon);
+    margin:0 auto 10px;
+    display:block;
+  }
+  h2.script-heading{
+    font-family:var(--script);
+    font-size:38px;
+    font-weight:400;
+    color:var(--maroon);
+    text-align:center;
+    margin-bottom:6px;
+  }
+  .heading-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:28px;
+  }
+  .heading-row .dot{
+    width:5px; height:5px;
+    border-radius:50%;
+    background:var(--rose);
+  }
+
+  /* ---------- Section 3: Welcome ---------- */
+  .welcome-text{
+    font-family:var(--serif);
+    font-size:15px;
+    line-height:1.9;
+    text-align:center;
+    color:var(--charcoal);
+    max-width:340px;
+    margin:0 auto;
+  }
+  .welcome-text::first-letter{
+    font-family:var(--script);
+    font-size:34px;
+    color:var(--maroon);
+    padding-right:2px;
+  }
+
+  /* ---------- Section 4: Scratch card ---------- */
+  .scratch-wrap{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .scratch-hint{
+    font-family:var(--serif);
+    font-style:italic;
+    font-size:12px;
+    color:var(--rose);
+    margin-bottom:18px;
+    text-align:center;
+  }
+  .scratch-stage{
+    position:relative;
+    width:270px;
+    height:270px;
+  }
+  .heart-reveal{
+    position:absolute;
+    inset:0;
+    clip-path: path('M135 250 C 20 175, 10 90, 70 45 C 110 15, 135 45, 135 65 C 135 45, 160 15, 200 45 C 260 90, 250 175, 135 250 Z');
+    background: linear-gradient(160deg,#DFF3EF,#BEE8E0 60%,#9EDBCE);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:40px 50px;
+  }
+  .heart-reveal .reveal-text{
+    font-family:var(--serif);
+    color:var(--maroon-deep);
+    font-size:13px;
+    line-height:1.7;
+  }
+  .heart-reveal .reveal-text .big{
+    font-family:var(--script);
+    font-size:26px;
+    display:block;
+    margin-bottom:4px;
+    color:var(--maroon);
+  }
+  #scratchCanvas{
+    position:absolute;
+    inset:0;
+    clip-path: path('M135 250 C 20 175, 10 90, 70 45 C 110 15, 135 45, 135 65 C 135 45, 160 15, 200 45 C 260 90, 250 175, 135 250 Z');
+    touch-action:none;
+    cursor:pointer;
+  }
+
+  /* ---------- Section 5: Gallery ---------- */
+  .gallery-track{
+    display:flex;
+    overflow-x:auto;
+    scroll-snap-type:x mandatory;
+    gap:14px;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    border-radius:18px;
+  }
+  .gallery-track::-webkit-scrollbar{display:none;}
+  .gallery-slide{
+    flex:0 0 100%;
+    scroll-snap-align:center;
+    border-radius:18px;
+    overflow:hidden;
+    aspect-ratio:4/5;
+    background:linear-gradient(150deg,#cdeae4,#9bd6ca);
+    position:relative;
+  }
+  .gallery-slide svg{width:100%; height:100%;}
+  .gallery-dots{
+    display:flex;
+    justify-content:center;
+    gap:7px;
+    margin-top:14px;
+  }
+  .gallery-dots .gdot{
+    width:6px; height:6px;
+    border-radius:50%;
+    background:rgba(14,92,86,0.25);
+    transition:background .3s ease, transform .3s ease;
+  }
+  .gallery-dots .gdot.active{
+    background:var(--maroon);
+    transform:scale(1.3);
+  }
+
+  /* ---------- Section 6: Countdown ---------- */
+  .countdown-card{
+    background: linear-gradient(160deg,#EAF7F5,#D9F0EC);
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(14,92,86,0.10);
+    display:flex;
+    padding:22px 6px;
+  }
+  .cd-box{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    position:relative;
+  }
+  .cd-box:not(:last-child)::after{
+    content:"";
+    position:absolute;
+    right:0; top:8%;
+    height:84%;
+    width:1px;
+    background:rgba(14,92,86,0.15);
+  }
+  .cd-num{
+    font-family:var(--serif);
+    font-size:30px;
+    font-weight:700;
+    color:var(--maroon);
+    font-variant-numeric: tabular-nums;
+  }
+  .cd-label{
+    font-family:var(--serif);
+    font-size:9px;
+    letter-spacing:2px;
+    color:var(--maroon);
+    margin-top:4px;
+  }
+
+  /* ---------- Section 7 & 10: Timeline ---------- */
+  .timeline{
+    position:relative;
+    padding-left:26px;
+  }
+  .timeline::before{
+    content:"";
+    position:absolute;
+    left:5px; top:6px; bottom:6px;
+    width:1.5px;
+    background:linear-gradient(var(--maroon), rgba(14,92,86,0.25));
+  }
+  .t-item{
+    position:relative;
+    margin-bottom:26px;
+  }
+  .t-item:last-child{margin-bottom:0;}
+  .t-item::before{
+    content:"";
+    position:absolute;
+    left:-26px; top:4px;
+    width:9px; height:9px;
+    border-radius:50%;
+    background:var(--maroon);
+    box-shadow:0 0 0 4px rgba(14,92,86,0.12);
+  }
+  .t-title{
+    font-family:var(--serif);
+    font-weight:700;
+    font-size:15px;
+    color:var(--maroon-deep);
+  }
+  .t-date{
+    font-family:var(--serif);
+    font-size:11.5px;
+    color:var(--rose);
+    margin-top:1px;
+    letter-spacing:0.3px;
+  }
+  .t-sub{
+    font-family:var(--serif);
+    font-style:italic;
+    font-size:12.5px;
+    color:var(--charcoal);
+    margin-top:5px;
+    line-height:1.5;
+  }
+
+  /* ---------- Section 8: Venue ---------- */
+  .venue-name{
+    font-family:var(--serif);
+    font-weight:700;
+    font-size:19px;
+    text-align:center;
+    color:var(--maroon-deep);
+    margin-bottom:4px;
+  }
+  .venue-addr{
+    font-family:var(--serif);
+    font-size:12.5px;
+    text-align:center;
+    color:var(--charcoal);
+    opacity:0.85;
+    margin-bottom:26px;
+  }
+  .palace-art{
+    width:100%;
+    max-width:260px;
+    display:block;
+    margin:0 auto 26px;
+    color:var(--maroon);
+  }
+  .btn-maroon{
+    display:block;
+    width:100%;
+    text-align:center;
+    background:var(--maroon);
+    color:#fff;
+    font-family:var(--serif);
+    font-weight:600;
+    font-size:13.5px;
+    letter-spacing:0.5px;
+    padding:15px;
+    border:none;
+    border-radius:30px;
+    text-decoration:none;
+    box-shadow:0 8px 20px rgba(14,92,86,0.25);
+    cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-maroon:active{transform:translateY(1px) scale(0.99);}
+
+
+  /* ---------- Section 11: Logistics ---------- */
+  .logi-item{
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+    margin-bottom:24px;
+  }
+  .logi-item:last-child{margin-bottom:0;}
+  .logi-icon{
+    flex:0 0 auto;
+    width:42px; height:42px;
+    border-radius:12px;
+    background:var(--blush-deep);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--maroon);
+  }
+  .logi-icon svg{width:20px; height:20px;}
+  .logi-title{
+    font-family:var(--serif);
+    font-weight:700;
+    font-size:13.5px;
+    color:var(--maroon-deep);
+    margin-bottom:3px;
+  }
+  .logi-text{
+    font-family:var(--serif);
+    font-size:12.5px;
+    line-height:1.6;
+    color:var(--charcoal);
+  }
+
+  /* ---------- Section 12: RSVP ---------- */
+  .rsvp-form{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .rsvp-form label{
+    font-family:var(--serif);
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:0.3px;
+    color:var(--maroon-deep);
+    margin-bottom:6px;
+    display:block;
+  }
+  .rsvp-form input,
+  .rsvp-form select,
+  .rsvp-form textarea{
+    width:100%;
+    background:#EDF8F6;
+    border:1px solid rgba(14,92,86,0.15);
+    border-radius:12px;
+    padding:13px 14px;
+    font-family:var(--serif);
+    font-size:13px;
+    color:var(--charcoal);
+    outline:none;
+    transition:border-color .2s ease;
+  }
+  .rsvp-form input:focus,
+  .rsvp-form select:focus,
+  .rsvp-form textarea:focus{
+    border-color:var(--maroon);
+  }
+  .rsvp-form textarea{resize:vertical; min-height:90px;}
+  .rsvp-confirm{
+    display:none;
+    text-align:center;
+    font-family:var(--script);
+    font-size:22px;
+    color:var(--maroon);
+    padding:14px;
+    background:var(--blush-deep);
+    border-radius:12px;
+  }
+  .rsvp-confirm.show{display:block;}
+
+  footer{
+    text-align:center;
+    padding:36px 20px 46px;
+    font-family:var(--script);
+    font-size:22px;
+    color:var(--rose);
+  }
+  footer .sub{
+    font-family:var(--serif);
+    font-size:10px;
+    letter-spacing:2px;
+    color:var(--maroon);
+    opacity:0.6;
+    margin-top:4px;
+  }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- Music toggle -->
+  <button class="music-toggle" id="musicToggle" aria-label="Toggle background music">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" id="speakerIcon">
+      <path d="M4 9v6h4l5 5V4L8 9H4z"/>
+      <path class="bar" d="M16.5 8.5a5 5 0 0 1 0 7"/>
+      <path class="bar" d="M19 6a9 9 0 0 1 0 12"/>
+    </svg>
+  </button>
+
+  <!-- ===== SECTION 1: ENVELOPE ===== -->
+  <div class="envelope-screen" id="envelopeScreen">
+    <div class="petal-field" id="petalField"></div>
+    <div class="envelope-wrap">
+      <div class="envelope-body"></div>
+      <div class="envelope-flap" id="flap"></div>
+      <div class="seal" id="seal"><span>Tap to<br>open</span></div>
+      <div class="flare" id="flare"></div>
+    </div>
+    <div class="invited-label">YOU ARE INVITED</div>
+    <div class="tap-hint">— touch the seal to begin —</div>
+  </div>
+
+  <!-- ===== SECTION 2: HERO ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-arch"></div>
+    <div class="hero-content">
+      <svg class="heart-icon" viewBox="0 0 24 24" fill="#fff"><path d="M12 21s-7.5-4.6-10-9.1C.4 8.6 2 5 5.6 5 8 5 10 6.6 12 9c2-2.4 4-4 6.4-4C22 5 23.6 8.6 22 11.9 19.5 16.4 12 21 12 21z"/></svg>
+      <p class="hero-welcome">We are honored to welcome you<br>to the Wedding ceremony of</p>
+
+      <div class="name-block">
+        <div class="name">Hafiz Zain Anjum</div>
+        <div class="subtext">Son of Mr. &amp; Mrs. Anjum Jalil</div>
+        <div class="quals">Civil Engineer</div>
+      </div>
+
+      <div class="ampersand">&amp;</div>
+
+      <div class="name-block">
+        <div class="name">Eliza Haidar</div>
+        <div class="subtext">Daughter of Mr. &amp; Mrs. Guhlam Haidar</div>
+        <div class="quals"></div>
+      </div>
+    </div>
+    <div class="scroll-indicator">SCROLL<div class="chevron"></div></div>
+  </section>
+
+  <!-- ===== SECTION 3: WELCOME ===== -->
+  <section>
+    <div class="heading-row">
+      <span class="dot"></span>
+      <h2 class="script-heading" style="margin:0;">blessed occasion</h2>
+      <span class="dot"></span>
+    </div>
+    <p class="welcome-text">We are honored to welcome you to the Wedding ceremony of Zain &amp; Eliza as they begin their journey together in faith and love. We thank you for your blessings on this blessed occasion.</p>
+  </section>
+
+  <!-- ===== SECTION 4: SCRATCH REVEAL ===== -->
+  <section>
+    <h2 class="script-heading">Scratch to Reveal</h2>
+    <div class="scratch-wrap">
+      <p class="scratch-hint">swipe your finger across the heart</p>
+      <div class="scratch-stage">
+        <div class="heart-reveal">
+          <div class="reveal-text">
+            <span class="big">You're Invited!</span>
+            September 27, 2026<br>Sunday · 1:00 PM
+          </div>
+        </div>
+        <canvas id="scratchCanvas" width="270" height="270"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 5: GALLERY ===== -->
+  <section>
+    <h2 class="script-heading">Our forever begins</h2>
+    <div class="gallery-track" id="galleryTrack">
+      <div class="gallery-slide">
+        <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
+          <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#CDEAE4"/><stop offset="100%" stop-color="#4FA69C"/>
+          </linearGradient></defs>
+          <rect width="400" height="500" fill="url(#g1)"/>
+          <circle cx="150" cy="180" r="60" fill="#0E5C56" opacity="0.85"/>
+          <circle cx="250" cy="180" r="60" fill="#1F7A6E" opacity="0.85"/>
+          <path d="M120 340 q80 -70 160 0 l0 120 -160 0 Z" fill="#073A36" opacity="0.9"/>
+          <circle cx="200" cy="250" r="16" fill="#C9A05C"/>
+        </svg>
+      </div>
+      <div class="gallery-slide">
+        <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
+          <defs><linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#CDE9E3"/><stop offset="100%" stop-color="#2E8377"/>
+          </linearGradient></defs>
+          <rect width="400" height="500" fill="url(#g2)"/>
+          <path d="M60 460 C 60 300 140 260 200 260 C 260 260 340 300 340 460 Z" fill="#0E5C56" opacity="0.8"/>
+          <circle cx="200" cy="190" r="70" fill="#073A36" opacity="0.85"/>
+        </svg>
+      </div>
+      <div class="gallery-slide">
+        <svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice">
+          <defs><linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#DFF3EF"/><stop offset="100%" stop-color="#3E9186"/>
+          </linearGradient></defs>
+          <rect width="400" height="500" fill="url(#g3)"/>
+          <circle cx="200" cy="250" r="120" fill="none" stroke="#0E5C56" stroke-width="3" opacity="0.6"/>
+          <circle cx="200" cy="250" r="40" fill="#C9A05C" opacity="0.7"/>
+        </svg>
+      </div>
+    </div>
+    <div class="gallery-dots" id="galleryDots"></div>
+  </section>
+
+  <!-- ===== SECTION 6: COUNTDOWN ===== -->
+  <section>
+    <h2 class="script-heading">Counting Down to Forever</h2>
+    <div class="countdown-card">
+      <div class="cd-box"><div class="cd-num" id="cd-days">00</div><div class="cd-label">DAYS</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-hours">00</div><div class="cd-label">HOURS</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-mins">00</div><div class="cd-label">MINS</div></div>
+      <div class="cd-box"><div class="cd-num" id="cd-secs">00</div><div class="cd-label">SECS</div></div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 7: PROGRAM TIMELINE ===== -->
+  <section>
+    <div class="heading-row">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E5C56" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <h2 class="script-heading" style="margin:0;">Program Timeline</h2>
+    </div>
+    <div class="timeline">
+      <div class="t-item">
+        <div class="t-title">Guest Arrival</div>
+        <div class="t-date">Sep 27, 2026 · 1:00 PM</div>
+        <div class="t-sub">"We Warmly welcome you...!"</div>
+      </div>
+      <div class="t-item">
+        <div class="t-title">Wedding Ceremony</div>
+        <div class="t-date">Sep 27, 2026 · 2:00 PM</div>
+        <div class="t-sub">"Your gracious presence is requested..."</div>
+      </div>
+      <div class="t-item">
+        <div class="t-title">Reception</div>
+        <div class="t-date">Sep 27, 2026 · 2:30 PM</div>
+        <div class="t-sub">"Your gracious presence is requested at the Reception at 7:30 PM onwards."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 8: VENUE ===== -->
+  <section>
+    <div class="heading-row">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E5C56" stroke-width="1.6"><path d="M12 22s7-7.4 7-12.6A7 7 0 0 0 5 9.4C5 14.6 12 22 12 22z"/><circle cx="12" cy="9.4" r="2.4"/></svg>
+      <h2 class="script-heading" style="margin:0;">Venue</h2>
+    </div>
+    <div class="venue-name">Dewan-e-Khaas</div>
+    <div class="venue-addr">Gujranwala Toll Plaza, Near Kamoki, Gujranwala, 52250, Pakistan</div>
+    <svg class="palace-art" viewBox="0 0 260 130" fill="none" stroke="#0E5C56" stroke-width="1.4">
+      <rect x="20" y="70" width="220" height="45" />
+      <rect x="40" y="45" width="30" height="70" />
+      <rect x="190" y="45" width="30" height="70" />
+      <path d="M40 45 q15 -22 30 0 Z" fill="#0E5C56" stroke="none"/>
+      <path d="M190 45 q15 -22 30 0 Z" fill="#0E5C56" stroke="none"/>
+      <rect x="110" y="20" width="40" height="95" />
+      <path d="M110 20 q20 -28 40 0 Z" fill="#0E5C56" stroke="none"/>
+      <circle cx="130" cy="10" r="2.4" fill="#C9A05C" stroke="none"/>
+      <line x1="130" y1="12" x2="130" y2="20"/>
+      <line x1="20" y1="115" x2="240" y2="115"/>
+      <rect x="120" y="88" width="20" height="27"/>
+    </svg>
+    <a class="btn-maroon" href="https://www.google.com/maps/place/Dewan-e-Khaas/@32.0136301,74.2133299,15.15z/data=!4m15!1m8!3m7!1s0x391f2983d520eb29:0x6fb33af85e7a368!2sGujranwala,+Pakistan!3b1!8m2!3d32.1475636!4d74.1914124!16zL20vMDIzbHpq!3m5!1s0x3918d57ec5018253:0x362610a866b670c2!8m2!3d32.0149153!4d74.2142886!16s%2Fg%2F11yj75gkdx?hl=da&entry=ttu&g_ep=EgoyMDI2MDgwNS4xIKXMDSoASAFQAw%3D%3D">View on Google Maps</a>
+  </section>
+
+
+  <!-- ===== SECTION 10: PRE-WEDDING EVENTS ===== -->
+  <section>
+    <div class="heading-row">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E5C56" stroke-width="1.6"><path d="M12 2c2 3 2 6 0 8-2-2-2-5 0-8z"/><path d="M4 12c3-2 6-2 8 0-2 2-5 2-8 0z"/><path d="M20 12c-3-2-6-2-8 0 2 2 5 2 8 0z"/><path d="M12 22c-2-3-2-6 0-8 2 2 2 5 0 8z"/></svg>
+      <h2 class="script-heading" style="margin:0;">Wedding Events</h2>
+    </div>
+    <div class="timeline">
+      <div class="t-item">
+        <div class="t-title">Mehndi</div>
+        <div class="t-date">Sep 25, 2026 · 7:00 PM</div>
+        <div class="t-sub">At Groom's House</div>
+      </div>
+      <div class="t-item">
+        <div class="t-title">Barat</div>
+        <div class="t-date">Sep 26, 2026 · 10:00 AM</div>
+        <div class="t-sub">At Jhang Palace</div>
+      </div>
+      <div class="t-item">
+        <div class="t-title">Walima</div>
+        <div class="t-date">Sep 27, 2026 · 1:00 PM</div>
+        <div class="t-sub">At Dewan-e-Khaas</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 11: LOGISTICS ===== -->
+  <section>
+    <div class="logi-item">
+      <div class="logi-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="9" width="18" height="12"/><path d="M3 9h18M12 9v12M12 9c-2-4-8-4-8-1 0 1.5 3 1 8 1zM12 9c2-4 8-4 8-1 0 1.5-3 1-8 1z"/></svg></div>
+      <div>
+        <div class="logi-title">Gifts</div>
+        <div class="logi-text">Your love, blessings, and presence are the greatest gifts we could ask for.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SECTION 12: RSVP ===== -->
+  <section>
+    <div class="heading-row">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0E5C56" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 6l9 7 9-7"/></svg>
+      <h2 class="script-heading" style="margin:0;">Send a Message</h2>
+    </div>
+    <form class="rsvp-form" id="rsvpForm">
+      <div>
+        <label for="rname">Your Name</label>
+        <input id="rname" type="text" placeholder="Your full name" required>
+      </div>
+      <div>
+        <label for="remail">Email</label>
+        <input id="remail" type="email" placeholder="you@example.com" required>
+      </div>
+      <div>
+        <label for="rrsvp">R. Will you be attending?</label>
+        <select id="rrsvp" required>
+          <option value="" selected>Select...</option>
+          <option value="yes">Joyfully accepts</option>
+          <option value="no">Regretfully declines</option>
+          <option value="maybe">Not yet sure</option>
+        </select>
+      </div>
+      <div>
+        <label for="rmsg">Your Message</label>
+        <textarea id="rmsg" placeholder="Write your wishes..."></textarea>
+      </div>
+      <button type="submit" class="btn-maroon">Send Message</button>
+      <div class="rsvp-confirm" id="rsvpConfirm">Thank you! With love, Zain &amp; Eliza</div>
+    </form>
+  </section>
+
+  <footer>
+    Zain &amp; Eliza
+    <div class="sub">SEPTEMBER 27 · 2026</div>
+  </footer>
+
+</div>
+
+<script>
+  // ---------- Falling petals ----------
+  const petalField = document.getElementById('petalField');
+  const petalColors = [
+    ['#4FA69C','#1F7A6E'],
+    ['#B9E4DC','#4FA69C'],
+    ['#0E5C56','#1F7A6E'],
+    ['#D7F0EA','#6BBBAE'],
+  ];
+  const petalSVG = (c1, c2) => `
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path d="M8 1C4 1 2 5 2 8c0 3.5 2.7 6.5 6 7 3.3-.5 6-3.5 6-7 0-3-2-7-6-7z"
+        fill="${c1}"/>
+      <path d="M8 3.5C6 4 5 6.5 5 8.2c0 2.2 1.4 4 3 4.4 1.6-.4 3-2.2 3-4.4 0-1.7-1-4.2-3-4.7z"
+        fill="${c2}" opacity="0.6"/>
+    </svg>`;
+
+  let petalTimer = null;
+  function spawnPetal(){
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    const [c1, c2] = petalColors[Math.floor(Math.random()*petalColors.length)];
+    const size = 10 + Math.random()*12;
+    petal.innerHTML = petalSVG(c1, c2);
+    petal.style.width = size + 'px';
+    petal.style.left = Math.random()*100 + '%';
+    const fallDuration = 6 + Math.random()*5;
+    const swayDuration = 2 + Math.random()*2;
+    const delay = Math.random()*0.6;
+    petal.style.animationDuration = `${fallDuration}s, ${swayDuration}s`;
+    petal.style.animationDelay = `${delay}s, ${delay}s`;
+    petal.style.opacity = (0.6 + Math.random()*0.4).toFixed(2);
+    petalField.appendChild(petal);
+    setTimeout(() => petal.remove(), (fallDuration + delay) * 1000 + 200);
+  }
+
+  function startPetals(){
+    if(petalTimer) return;
+    for(let i=0;i<6;i++) setTimeout(spawnPetal, i*250);
+    petalTimer = setInterval(spawnPetal, 500);
+  }
+  function stopPetals(){
+    clearInterval(petalTimer);
+    petalTimer = null;
+  }
+  startPetals();
+
+  // ---------- Envelope open ----------
+  const seal = document.getElementById('seal');
+  const flap = document.getElementById('flap');
+  const flare = document.getElementById('flare');
+  const envelopeScreen = document.getElementById('envelopeScreen');
+
+  seal.addEventListener('click', () => {
+    seal.classList.add('tapped');
+    flap.classList.add('open');
+    flare.classList.add('show');
+    stopPetals();
+    setTimeout(() => {
+      envelopeScreen.classList.add('hidden');
+      document.body.style.overflow = 'auto';
+    }, 900);
+  });
+
+  // ---------- Music toggle (uses WebAudio for a soft ambient tone, no external file needed) ----------
+  const musicToggle = document.getElementById('musicToggle');
+  let audioCtx, oscillators = [], playing = false;
+
+  function startAmbient(){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const freqs = [261.6, 329.6, 392.0];
+    const master = audioCtx.createGain();
+    master.gain.value = 0.035;
+    master.connect(audioCtx.destination);
+    freqs.forEach((f,i) => {
+      const osc = audioCtx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.value = f;
+      const g = audioCtx.createGain();
+      g.gain.value = 0.6;
+      osc.connect(g);
+      g.connect(master);
+      osc.start();
+      oscillators.push(osc);
+    });
+  }
+  function stopAmbient(){
+    oscillators.forEach(o => o.stop());
+    oscillators = [];
+    if(audioCtx) audioCtx.close();
+  }
+  musicToggle.addEventListener('click', () => {
+    playing = !playing;
+    musicToggle.classList.toggle('playing', playing);
+    if(playing){ startAmbient(); } else { stopAmbient(); }
+  });
+
+  // ---------- Scratch to reveal ----------
+  const canvas = document.getElementById('scratchCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function drawGlitter(){
+    const w = canvas.width, h = canvas.height;
+    const grad = ctx.createLinearGradient(0,0,w,h);
+    grad.addColorStop(0,'#1F7A6E');
+    grad.addColorStop(0.5,'#073A36');
+    grad.addColorStop(1,'#1F7A6E');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,w,h);
+    // sparkle speckles
+    for(let i=0;i<260;i++){
+      const x = Math.random()*w, y = Math.random()*h;
+      const r = Math.random()*1.6+0.3;
+      ctx.fillStyle = `rgba(255,255,255,${Math.random()*0.7+0.1})`;
+      ctx.beginPath();
+      ctx.arc(x,y,r,0,Math.PI*2);
+      ctx.fill();
+    }
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.font = '16px "Great Vibes", cursive';
+    ctx.textAlign = 'center';
+    ctx.fillText('Scratch here', w/2, h/2);
+  }
+  drawGlitter();
+
+  ctx.globalCompositeOperation = 'destination-out';
+
+  let scratching = false;
+  let scratchedPixels = 0;
+  const totalPixels = canvas.width * canvas.height;
+  let revealed = false;
+
+  function getPos(e){
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+  }
+
+  function scratchAt(x,y){
+    ctx.beginPath();
+    ctx.arc(x,y,22,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  function checkReveal(){
+    if(revealed) return;
+    const data = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+    let cleared = 0;
+    for(let i=3;i<data.length;i+=4*40){
+      if(data[i] === 0) cleared++;
+    }
+    const ratio = cleared / (data.length/(4*40));
+    if(ratio > 0.55){
+      revealed = true;
+      canvas.style.transition = 'opacity .6s ease';
+      canvas.style.opacity = '0';
+      setTimeout(()=>{ canvas.style.pointerEvents='none'; }, 600);
+    }
+  }
+
+  function handleStart(e){ scratching = true; const p = getPos(e); scratchAt(p.x,p.y); }
+  function handleMove(e){ if(!scratching) return; e.preventDefault(); const p = getPos(e); scratchAt(p.x,p.y); checkReveal(); }
+  function handleEnd(){ scratching = false; checkReveal(); }
+
+  canvas.addEventListener('mousedown', handleStart);
+  canvas.addEventListener('mousemove', handleMove);
+  window.addEventListener('mouseup', handleEnd);
+  canvas.addEventListener('touchstart', handleStart, {passive:true});
+  canvas.addEventListener('touchmove', handleMove, {passive:false});
+  canvas.addEventListener('touchend', handleEnd);
+
+  // ---------- Gallery dots ----------
+  const track = document.getElementById('galleryTrack');
+  const dotsWrap = document.getElementById('galleryDots');
+  const slides = track.querySelectorAll('.gallery-slide');
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'gdot' + (i===0 ? ' active' : '');
+    dotsWrap.appendChild(d);
+  });
+  const dots = dotsWrap.querySelectorAll('.gdot');
+  track.addEventListener('scroll', () => {
+    const idx = Math.round(track.scrollLeft / track.clientWidth);
+    dots.forEach((d,i) => d.classList.toggle('active', i===idx));
+  });
+
+  // ---------- Countdown ----------
+  const weddingDate = new Date('2026-09-27T13:00:00');
+  function updateCountdown(){
+    const now = new Date();
+    let diff = weddingDate - now;
+    if(diff < 0) diff = 0;
+    const days = Math.floor(diff / (1000*60*60*24));
+    const hours = Math.floor((diff / (1000*60*60)) % 24);
+    const mins = Math.floor((diff / (1000*60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+    document.getElementById('cd-days').textContent = String(days).padStart(2,'0');
+    document.getElementById('cd-hours').textContent = String(hours).padStart(2,'0');
+    document.getElementById('cd-mins').textContent = String(mins).padStart(2,'0');
+    document.getElementById('cd-secs').textContent = String(secs).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ---------- RSVP form ----------
+  const rsvpForm = document.getElementById('rsvpForm');
+  const rsvpConfirm = document.getElementById('rsvpConfirm');
+  rsvpForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    rsvpForm.querySelectorAll('input, select, textarea, button').forEach(el => el.style.display = 'none');
+    rsvpConfirm.classList.add('show');
+  });
+</script>
+</body>
+</html>
